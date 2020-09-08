@@ -1,5 +1,16 @@
 package constants
 
+const (
+    AppName  = "touchbase"
+)
+
+const (
+	CommaSeparator = ","
+
+	JsonPrefix = ""
+	JsonIntend = "  "
+)
+
 // Logging constants.
 const (
     JsonFormat    = "json"

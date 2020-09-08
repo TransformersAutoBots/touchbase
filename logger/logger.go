@@ -1,12 +1,13 @@
 package logger
 
 import (
-    "github.com/autobots/touchbase/constants"
-    "go.uber.org/zap/zapcore"
     "log"
     "sync"
 
     "go.uber.org/zap"
+    "go.uber.org/zap/zapcore"
+
+    "github.com/autobots/touchbase/constants"
 )
 
 // LogInstance the log instance for the application.

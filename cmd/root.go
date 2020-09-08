@@ -2,14 +2,24 @@ package cmd
 
 import (
     "fmt"
+
     "github.com/common-nighthawk/go-figure"
     "github.com/spf13/cobra"
-    "os"
+
+    "github.com/autobots/touchbase/constants"
+    log "github.com/autobots/touchbase/logger"
+    "github.com/autobots/touchbase/types"
+    "github.com/autobots/touchbase/validations"
 )
 
 const (
     fontName = "big"
-    appName  = "touchbase"
+)
+
+var (
+    debugMode bool
+
+    sender = &types.Sender{}
 )
 
 func generateBanner(phrase string) string {
@@ -19,8 +29,10 @@ func generateBanner(phrase string) string {
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
     Use:   "touchbase",
-    Short: "Connect with people and send your profile!",
-    Long:  fmt.Sprintf("%sTouchbase will help you connect with people, share your profile with short description about yourself and attach your resume/portfolio!", generateBanner(appName)),
+    Short: "Connect with people and share your profile!",
+    Long:  fmt.Sprintf("%sTouchbase will help you connect with people, share your profile with short description about yourself and your resume/portfolio!", generateBanner(constants.AppName)),
+
+    // TODO: validate token using env variable
 }
 
 // Execute adds all child commands to the root command and sets flags
@@ -28,7 +40,19 @@ var rootCmd = &cobra.Command{
 // to the rootCmd.
 func Execute() {
     if err := rootCmd.Execute(); err != nil {
-        fmt.Println(err)
-        os.Exit(1)
+        getLogger().Fatal("Error in executing command", log.TouchBaseError(&types.Log{
+            Reason: err.Error(),
+        }))
     }
+}
+
+func init() {
+    // Add sub commands
+    rootCmd.AddCommand(initCmd)
+
+    // Define your flags
+    rootCmd.PersistentFlags().BoolVarP(&debugMode, "debug", "X", false, "Enable debug mode (default false)")
+
+    // Init validations
+    validations.InitValidator()
 }
