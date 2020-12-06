@@ -12,11 +12,11 @@ import (
 )
 
 const (
-    // types.Sender struct json validation names
+    // touchbasemanager.Sender struct json validation names
     fileExistsTag = "fileExists"
     validPathTag  = "validPath"
 
-    // types.Sender struct json keys
+    // touchbasemanager.Sender struct json keys
     dataFilePath   = "data_file"
     configFilePath = "config_file_path"
 )
