@@ -33,12 +33,12 @@ necessary config files required for the application to run.`,
         }
 
         // Clean the dir/file path
-        if err := ensureAbsPath(config); err != nil {
+        if err := ensureAbsPath(configs); err != nil {
             return err
         }
 
         // Validate the email address and data file path
-        if err := validations.ValidateConfig(config); err != nil {
+        if err := validations.ValidateConfig(configs); err != nil {
             return err
         }
         return nil
@@ -46,7 +46,7 @@ necessary config files required for the application to run.`,
 
     RunE: func(cmd *cobra.Command, args []string) error {
         getLogger().Debug("Initializing application configs... ")
-        err := touchbasemanager.CreateConfig(config)
+        err := touchbasemanager.CreateConfig(configs)
         if err != nil {
             return err
         }
@@ -55,16 +55,16 @@ necessary config files required for the application to run.`,
 }
 
 func init() {
-    configInitCmd.Flags().StringVarP(&config.User, user, "u", "", "The user email address")
+    configInitCmd.Flags().StringVarP(&configs.User, user, "u", "", "The user email address")
     _ = configInitCmd.MarkFlagRequired(user)
 
-    configInitCmd.Flags().StringVarP(&config.Password, password, "p", "", "The user password")
+    configInitCmd.Flags().StringVarP(&configs.Password, password, "p", "", "The user password")
     _ = configInitCmd.MarkFlagRequired(password)
 
-    configInitCmd.Flags().StringVarP(&config.DataFile, dataFilePath, "d", "", "The data file path")
+    configInitCmd.Flags().StringVarP(&configs.DataFile, dataFilePath, "d", "", "The data file path")
     _ = configInitCmd.MarkFlagRequired(dataFilePath)
 
-    configInitCmd.Flags().StringVarP(&config.Dir, configDirPath, "", ".", "The config dir path.")
+    configInitCmd.Flags().StringVarP(&configs.Dir, configDirPath, "", ".", "The config dir path")
 }
 
 func ensureAbsPath(config *touchbasemanager.Config) error {

@@ -11,6 +11,6 @@ require (
 	github.com/spf13/cobra v1.0.0
 	github.com/tidwall/gjson v1.6.3 // indirect
 	github.com/tidwall/match v1.0.2 // indirect
-	github.com/tidwall/sjson v1.1.2 // indirect
+	github.com/tidwall/sjson v1.1.2
 	go.uber.org/zap v1.16.0
 )

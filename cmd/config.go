@@ -1,13 +1,14 @@
 package cmd
 
 import (
+    "github.com/spf13/cobra"
+
     "github.com/autobots/touchbase/constants"
     "github.com/autobots/touchbase/touchbasemanager"
-    "github.com/spf13/cobra"
 )
 
 var (
-    config = &touchbasemanager.Config{}
+    configs = &touchbasemanager.Config{}
 )
 
 // configCmd represents the touchbase config command
