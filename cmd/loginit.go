@@ -1,10 +1,10 @@
 package cmd
 
 import (
+    "github.com/autobots/touchbase/touchbasemanager"
     "go.uber.org/zap"
     "go.uber.org/zap/zapcore"
 
-    "github.com/autobots/touchbase/configs"
     log "github.com/autobots/touchbase/logger"
 )
 
@@ -16,13 +16,14 @@ var logger *log.LogInstance
 //   logFormat: the log Format
 func initLogging(logFormat string, enableDebugMode bool) {
     if enableDebugMode {
-        logger = log.New(logFormat, true, zapcore.DebugLevel.String(), &log.LogInstance{})
+        logger = log.New(logFormat, zapcore.DebugLevel.String(), true)
     } else {
-        logger = log.New(logFormat, true, zapcore.InfoLevel.String(), &log.LogInstance{})
+        logger = log.New(logFormat, zapcore.InfoLevel.String(), true)
     }
 
     // Pass the same logger for components
-    configs.InitLogger(logger)
+    touchbasemanager.InitLogger(logger)
+    // configs.InitLogger(logger)
 }
 
 // getLogger retrieves the logging instance.

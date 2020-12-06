@@ -1,14 +1,14 @@
 package constants
 
 const (
-    AppName  = "touchbase"
+    AppName = "touchbase"
 )
 
 const (
-	CommaSeparator = ","
+    CommaSeparator = ","
 
-	JsonPrefix = ""
-	JsonIntend = "  "
+    JsonPrefix = ""
+    JsonIntend = "  "
 )
 
 // Logging constants.
@@ -16,7 +16,8 @@ const (
     JsonFormat    = "json"
     ConsoleFormat = "console"
 
-    Level  = "level"
-    Time   = "time"
-    Caller = "caller"
+    LevelKey   = "level"
+    TimeKey    = "time"
+    MessageKey = "message"
+    CallerKey  = "caller"
 )

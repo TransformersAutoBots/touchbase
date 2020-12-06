@@ -18,8 +18,6 @@ const (
 
 var (
     debugMode bool
-
-    sender = &types.Sender{}
 )
 
 func generateBanner(phrase string) string {
@@ -48,7 +46,7 @@ func Execute() {
 
 func init() {
     // Add sub commands
-    rootCmd.AddCommand(initCmd)
+    rootCmd.AddCommand(configCmd)
 
     // Define your flags
     rootCmd.PersistentFlags().BoolVarP(&debugMode, "debug", "X", false, "Enable debug mode (default false)")

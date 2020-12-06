@@ -14,13 +14,31 @@ import (
 type LogInstance struct {
     logInitialized sync.Once
     log            *zap.Logger
+
+    senderDetailsInitialized sync.Once
 }
 
-// logConfig config to customize logging.
+// logConfig holds information necessary for customizing the logger.
 type logConfig struct {
     level      string
     format     string
     enableTime bool
+}
+
+// AddSenderDetails adds the sender details to root logging.
+//
+// Args:
+//   v: the sender details
+//   logInstance: the log instance for the current event
+// Return:
+//   the log instance with sender details for the current event
+func AddSenderDetails(v interface{}, logInstance *LogInstance) *LogInstance {
+    logInstance.senderDetailsInitialized.Do(func() {
+        logInstance.log = logInstance.log.With(
+            convertToField("senderDetails", v),
+        )
+    })
+    return logInstance
 }
 
 // getLogLevel gets the log level.
@@ -58,7 +76,7 @@ func getLogLevel(level string) zapcore.Level {
 //   New zap logger instance
 func buildLoggerInstance(config logConfig) *zap.Logger {
     if config.format == "" {
-        log.Fatalf("Logging format cannot be empty")
+        log.Fatal("Logging format cannot be empty")
     }
     if config.format != constants.ConsoleFormat && config.format != constants.JsonFormat {
         log.Fatalf("Only %v and %v format are supported for logging", constants.ConsoleFormat, constants.JsonFormat)
@@ -71,10 +89,11 @@ func buildLoggerInstance(config logConfig) *zap.Logger {
         DisableStacktrace: false,
         Encoding:          config.format,
         EncoderConfig: zapcore.EncoderConfig{
-            MessageKey:   "logMessage",
-            LevelKey:     constants.Level,
+            LineEnding:   zapcore.DefaultLineEnding,
+            MessageKey:   constants.MessageKey,
+            LevelKey:     constants.LevelKey,
             EncodeLevel:  zapcore.CapitalLevelEncoder,
-            CallerKey:    constants.Caller,
+            CallerKey:    constants.CallerKey,
             EncodeCaller: zapcore.ShortCallerEncoder,
         },
         OutputPaths:      []string{"stderr"},
@@ -83,7 +102,7 @@ func buildLoggerInstance(config logConfig) *zap.Logger {
     }
 
     if config.enableTime {
-        zapConfig.EncoderConfig.TimeKey = constants.Time
+        zapConfig.EncoderConfig.TimeKey = constants.TimeKey
         zapConfig.EncoderConfig.EncodeTime = zapcore.RFC3339NanoTimeEncoder
     }
 
@@ -94,22 +113,36 @@ func buildLoggerInstance(config logConfig) *zap.Logger {
     return logger
 }
 
-// New creates a new zap logger instance if not initialized.
+// newLogger creates a new configured Zap logger.
 //
 // Args:
 //   logFormat: the log format
-//   enableTime: enable time in logging
 //   logLevel: the log level
-//   logInstance: the log instance
+//   enableTime: enable time in logging
 // Return:
-//   the log instance with new zap logger if not already initialized
-func New(logFormat string, enableTime bool, logLevel string, logInstance *LogInstance) *LogInstance {
-    logInstance.logInitialized.Do(func() {
-        logInstance.log = buildLoggerInstance(logConfig{
+//   New Zap logger instance
+func newLogger(logFormat, logLevel string, enableTime bool) *zap.Logger {
+    return buildLoggerInstance(
+        logConfig{
             level:      logLevel,
             format:     logFormat,
             enableTime: enableTime,
-        })
+        },
+    )
+}
+
+// New initiates a new Zap logger instance if not initialized.
+//
+// Args:
+//   logFormat: the log format
+//   logLevel: the log level
+//   enableTime: flag to enable time in logging
+// Return:
+//   Log Instance with new zap logger instance if not already initialized
+func New(logFormat, logLevel string, enableTime bool) *LogInstance {
+    logInstance := &LogInstance{}
+    logInstance.logInitialized.Do(func() {
+        logInstance.log = newLogger(logFormat, logLevel, enableTime)
     })
     return logInstance
 }

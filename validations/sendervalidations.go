@@ -3,20 +3,22 @@ package validations
 import (
     "os"
 
+    "github.com/autobots/touchbase/touchbasemanager"
+    "github.com/autobots/touchbase/utils"
+
     ut "github.com/go-playground/universal-translator"
     "github.com/go-playground/validator/v10"
     "github.com/pkg/errors"
-
-    "github.com/autobots/touchbase/types"
-    "github.com/autobots/touchbase/utils"
 )
 
 const (
     // types.Sender struct json validation names
     fileExistsTag = "fileExists"
+    validPathTag  = "validPath"
 
     // types.Sender struct json keys
-    dataFilePath = "data_file"
+    dataFilePath   = "data_file"
+    configFilePath = "config_file_path"
 )
 
 func validateFileExists(fl validator.FieldLevel) bool {
@@ -28,7 +30,22 @@ func validateFileExists(fl validator.FieldLevel) bool {
         return false
     }
     return !fileInfo.IsDir()
-    // return utils.CheckFileExists(fl.Field().String())
+}
+
+func validatePath(fl validator.FieldLevel) bool {
+    if utils.IsEmptyString(fl.Field().String()) {
+        return false
+    }
+    fileInfo, err := os.Stat(fl.Field().String())
+    if err != nil && os.IsNotExist(err) {
+        return false
+    }
+    return fileInfo.IsDir()
+}
+
+// customValidationError returns the custom validation error message.
+func customValidationError(tag, errorMessage string) error {
+    return errors.Errorf("failed to register %s custom validation. Reason: %s", tag, errorMessage)
 }
 
 func newSenderValidator() (ut.Translator, error) {
@@ -39,7 +56,12 @@ func newSenderValidator() (ut.Translator, error) {
 
     err = validate.RegisterValidation(fileExistsTag, validateFileExists)
     if err != nil {
-        return nil, errors.Errorf("failed to register %s custom validations. Reason: %s", fileExistsTag, err.Error())
+        return nil, customValidationError(fileExistsTag, err.Error())
+    }
+
+    err = validate.RegisterValidation(validPathTag, validatePath)
+    if err != nil {
+        return nil, customValidationError(validPathTag, err.Error())
     }
 
     translations := []struct {
@@ -49,6 +71,10 @@ func newSenderValidator() (ut.Translator, error) {
         {
             tag:         fileExistsTag,
             translation: "data file does not exists at location",
+        },
+        {
+            tag:         validPathTag,
+            translation: "invalid config file path",
         },
     }
 
@@ -61,7 +87,7 @@ func newSenderValidator() (ut.Translator, error) {
     return trans, nil
 }
 
-func ValidateSender(sender *types.Sender) error {
+func ValidateSender(sender *touchbasemanager.Sender) error {
     trans, err := newSenderValidator()
     if err != nil {
         return err
@@ -70,7 +96,7 @@ func ValidateSender(sender *types.Sender) error {
     if err := validate.Struct(sender); err != nil {
         errs := err.(validator.ValidationErrors)
         for _, e := range errs {
-            if e.Field() == dataFilePath {
+            if e.Field() == dataFilePath || e.Field() == configFilePath {
                 return errors.Errorf("%s %s", e.Translate(trans), e.Value())
             }
             return errors.Errorf("%s. Current Value: %s", e.Translate(trans), e.Value())
