@@ -1,6 +1,8 @@
 package cmd
 
 import (
+    "fmt"
+
     "github.com/spf13/cobra"
 
     "github.com/autobots/touchbase/touchbasemanager"
@@ -21,8 +23,8 @@ const (
 var configInitCmd = &cobra.Command{
     Use:   "init",
     Short: "Initialize configs",
-    Long: `The init command will initialize the touchbase application and generate the
-necessary config files required for the application to run.`,
+    Long: fmt.Sprintf(`%sThe init command will initialize the touchbase application and generate 
+the necessary config files required for the application to run.`, generateBanner(constants.AppName)),
 
     PreRunE: func(cmd *cobra.Command, args []string) error {
         // Initialize Logging

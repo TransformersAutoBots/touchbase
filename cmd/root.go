@@ -28,7 +28,8 @@ func generateBanner(phrase string) string {
 var rootCmd = &cobra.Command{
     Use:   "touchbase",
     Short: "Connect with people and share your profile!",
-    Long:  fmt.Sprintf("%sTouchbase will help you connect with people, share your profile with short description about yourself and your resume/portfolio!", generateBanner(constants.AppName)),
+    Long: fmt.Sprintf(`%sTouchbase helps to connect with people, share your profile with short 
+description sabout yourself and your resume/portfolio!`, generateBanner(constants.AppName)),
 
     // TODO: validate token using env variable
 }
