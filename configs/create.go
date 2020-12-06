@@ -9,13 +9,13 @@ import (
 )
 
 func New(path string, data interface{}) ConfigImpl {
-	return &Config{
+	return &config{
 		FilePath: path,
 		Data:     data,
 	}
 }
 
-func (c *Config) Create() error {
+func (c *config) Create() error {
 	configData, err := utils.PrettyJson(c.Data)
 	if err != nil {
 		getLogger().With(
@@ -33,6 +33,6 @@ func (c *Config) Create() error {
 	return nil
 }
 
-func (c *Config) Update() error {
+func (c *config) Update() error {
 	panic("implement me")
 }

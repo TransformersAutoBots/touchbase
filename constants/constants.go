@@ -2,6 +2,8 @@ package constants
 
 const (
     AppName = "touchbase"
+
+    TouchBaseToken = "TOUCHBASE_TOKEN"
 )
 
 const (

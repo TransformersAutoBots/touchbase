@@ -9,5 +9,8 @@ require (
 	github.com/go-playground/validator/v10 v10.3.0
 	github.com/pkg/errors v0.9.1
 	github.com/spf13/cobra v1.0.0
+	github.com/tidwall/gjson v1.6.3 // indirect
+	github.com/tidwall/match v1.0.2 // indirect
+	github.com/tidwall/sjson v1.1.2 // indirect
 	go.uber.org/zap v1.16.0
 )

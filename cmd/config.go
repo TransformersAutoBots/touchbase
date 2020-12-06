@@ -7,7 +7,7 @@ import (
 )
 
 var (
-    sender = &touchbasemanager.Sender{}
+    config = &touchbasemanager.Config{}
 )
 
 // configCmd represents the touchbase config command

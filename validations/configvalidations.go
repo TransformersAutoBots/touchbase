@@ -12,13 +12,13 @@ import (
 )
 
 const (
-    // touchbasemanager.Sender struct json validation names
+    // touchbasemanager.Config struct json validation names
     fileExistsTag = "fileExists"
-    validPathTag  = "validPath"
+    dirExistsTag  = "dirExists"
 
-    // touchbasemanager.Sender struct json keys
-    dataFilePath   = "data_file"
-    configFilePath = "config_file_path"
+    // touchbasemanager.Config struct json keys
+    dataFilePath  = "data_file"
+    configDirPath = "dir"
 )
 
 func validateFileExists(fl validator.FieldLevel) bool {
@@ -48,7 +48,7 @@ func customValidationError(tag, errorMessage string) error {
     return errors.Errorf("failed to register %s custom validation. Reason: %s", tag, errorMessage)
 }
 
-func newSenderValidator() (ut.Translator, error) {
+func newConfigValidator() (ut.Translator, error) {
     trans, err := getUniversalTranslator()
     if err != nil {
         return nil, err
@@ -59,9 +59,9 @@ func newSenderValidator() (ut.Translator, error) {
         return nil, customValidationError(fileExistsTag, err.Error())
     }
 
-    err = validate.RegisterValidation(validPathTag, validatePath)
+    err = validate.RegisterValidation(dirExistsTag, validatePath)
     if err != nil {
-        return nil, customValidationError(validPathTag, err.Error())
+        return nil, customValidationError(dirExistsTag, err.Error())
     }
 
     translations := []struct {
@@ -73,7 +73,7 @@ func newSenderValidator() (ut.Translator, error) {
             translation: "data file does not exists at location",
         },
         {
-            tag:         validPathTag,
+            tag:         dirExistsTag,
             translation: "invalid config file path",
         },
     }
@@ -87,16 +87,16 @@ func newSenderValidator() (ut.Translator, error) {
     return trans, nil
 }
 
-func ValidateSender(sender *touchbasemanager.Sender) error {
-    trans, err := newSenderValidator()
+func ValidateConfig(config *touchbasemanager.Config) error {
+    trans, err := newConfigValidator()
     if err != nil {
         return err
     }
 
-    if err := validate.Struct(sender); err != nil {
+    if err := validate.Struct(config); err != nil {
         errs := err.(validator.ValidationErrors)
         for _, e := range errs {
-            if e.Field() == dataFilePath || e.Field() == configFilePath {
+            if e.Field() == dataFilePath || e.Field() == configDirPath {
                 return errors.Errorf("%s %s", e.Translate(trans), e.Value())
             }
             return errors.Errorf("%s. Current Value: %s", e.Translate(trans), e.Value())

@@ -1,6 +1,7 @@
 package validations
 
 import (
+    "os"
     "reflect"
     "strings"
 
@@ -9,6 +10,8 @@ import (
     "github.com/go-playground/validator/v10"
     entranslations "github.com/go-playground/validator/v10/translations/en"
     "github.com/pkg/errors"
+
+    "github.com/autobots/touchbase/utils"
 
     "github.com/autobots/touchbase/constants"
 )
@@ -52,4 +55,11 @@ func translationFunc(ut ut.Translator, fe validator.FieldError) string {
         return fe.(error).Error()
     }
     return t
+}
+
+func ValidateEnvKey(keyName string) error {
+    if utils.IsEmptyString(os.Getenv(keyName)) {
+        return errors.Errorf("Missing Env Key: %s. Use export|SET %s command based on your operating system", keyName, keyName)
+    }
+    return nil
 }

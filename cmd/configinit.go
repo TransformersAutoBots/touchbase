@@ -1,18 +1,20 @@
 package cmd
 
 import (
+    "github.com/spf13/cobra"
+
     "github.com/autobots/touchbase/touchbasemanager"
     "github.com/autobots/touchbase/utils"
-    "github.com/spf13/cobra"
 
     "github.com/autobots/touchbase/constants"
     "github.com/autobots/touchbase/validations"
 )
 
 const (
-    user           = "user"
-    dataFilePath   = "file-path"
-    configFilePath = "config-path"
+    user          = "user"
+    password      = "password"
+    dataFilePath  = "data-file"
+    configDirPath = "config-dir"
 )
 
 // configInitCmd represents the touchbase config init command
@@ -26,13 +28,17 @@ necessary config files required for the application to run.`,
         // Initialize Logging
         initLogging(constants.ConsoleFormat, debugMode)
 
+        if err := validations.ValidateEnvKey(constants.TouchBaseToken); err != nil {
+            return err
+        }
+
         // Clean the dir/file path
-        if err := ensureAbsPath(sender); err != nil {
+        if err := ensureAbsPath(config); err != nil {
             return err
         }
 
         // Validate the email address and data file path
-        if err := validations.ValidateSender(sender); err != nil {
+        if err := validations.ValidateConfig(config); err != nil {
             return err
         }
         return nil
@@ -40,7 +46,7 @@ necessary config files required for the application to run.`,
 
     RunE: func(cmd *cobra.Command, args []string) error {
         getLogger().Debug("Initializing application configs... ")
-        err := touchbasemanager.CreateConfig(sender)
+        err := touchbasemanager.CreateConfig(config)
         if err != nil {
             return err
         }
@@ -49,26 +55,29 @@ necessary config files required for the application to run.`,
 }
 
 func init() {
-    configInitCmd.Flags().StringVarP(&sender.User, user, "u", "", "The sender email address")
+    configInitCmd.Flags().StringVarP(&config.User, user, "u", "", "The user email address")
     _ = configInitCmd.MarkFlagRequired(user)
 
-    configInitCmd.Flags().StringVarP(&sender.DataFile, dataFilePath, "p", "", "The data file path")
+    configInitCmd.Flags().StringVarP(&config.Password, password, "p", "", "The user password")
+    _ = configInitCmd.MarkFlagRequired(password)
+
+    configInitCmd.Flags().StringVarP(&config.DataFile, dataFilePath, "d", "", "The data file path")
     _ = configInitCmd.MarkFlagRequired(dataFilePath)
 
-    configInitCmd.Flags().StringVarP(&sender.ConfigFilePath, configFilePath, "", ".", "The config file path.")
+    configInitCmd.Flags().StringVarP(&config.Dir, configDirPath, "", ".", "The config dir path.")
 }
 
-func ensureAbsPath(sender *touchbasemanager.Sender) error {
-    absPath, err := utils.GetAbsPath(sender.DataFile)
+func ensureAbsPath(config *touchbasemanager.Config) error {
+    absPath, err := utils.GetAbsPath(config.DataFile)
     if err != nil {
         return err
     }
-    sender.DataFile = absPath
+    config.DataFile = absPath
 
-    absPath, err = utils.GetAbsPath(sender.ConfigFilePath)
+    absPath, err = utils.GetAbsPath(config.Dir)
     if err != nil {
         return err
     }
-    sender.ConfigFilePath = absPath
+    config.Dir = absPath
     return nil
 }

@@ -5,7 +5,7 @@ type ConfigImpl interface {
 	Update() error
 }
 
-type Config struct {
+type config struct {
 	FilePath string      `json:"file_path"`
 	Data     interface{} `json:"data"`
 }
