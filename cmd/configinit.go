@@ -30,7 +30,7 @@ the necessary config files required for the application to run.`, generateBanner
         // Initialize Logging
         initLogging(constants.ConsoleFormat, debugMode)
 
-        if err := validations.ValidateEnvKey(constants.TouchBaseToken); err != nil {
+        if err := validations.ValidateAppToken(constants.TouchBaseToken); err != nil {
             return err
         }
 
@@ -66,7 +66,7 @@ func init() {
     configInitCmd.Flags().StringVarP(&configs.DataFile, dataFilePath, "d", "", "The data file path")
     _ = configInitCmd.MarkFlagRequired(dataFilePath)
 
-    configInitCmd.Flags().StringVarP(&configs.Dir, configDirPath, "", ".", "The config dir path")
+    configInitCmd.Flags().StringVar(&configs.Dir, configDirPath, ".", "The config dir path")
 }
 
 func ensureAbsPath(config *touchbasemanager.Config) error {

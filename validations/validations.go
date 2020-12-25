@@ -57,9 +57,25 @@ func translationFunc(ut ut.Translator, fe validator.FieldError) string {
     return t
 }
 
-func ValidateEnvKey(keyName string) error {
+func ValidateAppToken(keyName string) error {
     if utils.IsEmptyString(os.Getenv(keyName)) {
         return errors.Errorf("Missing Env Key: %s. Use export|SET %s command based on your operating system", keyName, keyName)
+    }
+    return nil
+}
+
+func ValidateEnvConfigDir(keyName string) error {
+    if err := ValidateAppToken(keyName); err != nil {
+        return err
+    }
+
+    absPath, err := utils.GetAbsPath(os.Getenv(keyName))
+    if err != nil {
+        return err
+    }
+
+    if !validateDirPath(absPath) {
+        return errors.Errorf("The config dir path: %s is not valid", absPath)
     }
     return nil
 }

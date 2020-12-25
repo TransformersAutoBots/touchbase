@@ -32,15 +32,19 @@ func validateFileExists(fl validator.FieldLevel) bool {
     return !fileInfo.IsDir()
 }
 
-func validatePath(fl validator.FieldLevel) bool {
-    if utils.IsEmptyString(fl.Field().String()) {
+func validateDirPath(path string) bool {
+    if utils.IsEmptyString(path) {
         return false
     }
-    fileInfo, err := os.Stat(fl.Field().String())
+    fileInfo, err := os.Stat(path)
     if err != nil && os.IsNotExist(err) {
         return false
     }
     return fileInfo.IsDir()
+}
+
+func validateDirExists(fl validator.FieldLevel) bool {
+    return validateDirPath(fl.Field().String())
 }
 
 // customValidationError returns the custom validation error message.
@@ -59,7 +63,7 @@ func newConfigValidator() (ut.Translator, error) {
         return nil, customValidationError(fileExistsTag, err.Error())
     }
 
-    err = validate.RegisterValidation(dirExistsTag, validatePath)
+    err = validate.RegisterValidation(dirExistsTag, validateDirExists)
     if err != nil {
         return nil, customValidationError(dirExistsTag, err.Error())
     }

@@ -10,7 +10,8 @@ import (
 )
 
 var (
-    configs = &touchbasemanager.Config{}
+    configs       = &touchbasemanager.Config{}
+    configsUpdate = &touchbasemanager.ConfigUpdate{}
 )
 
 // configCmd represents the touchbase config command

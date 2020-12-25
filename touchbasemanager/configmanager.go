@@ -36,6 +36,8 @@ func (c *Config) getConfigFilePath() string {
 func (c *Config) generateConfigFile() error {
     // E.g: ./.{app_name}/config
     configFile := c.getConfigFilePath()
+
+    // Config already exists
     fileInfo, err := os.Stat(configFile)
     if !os.IsNotExist(err) && !fileInfo.IsDir() {
         return errors.Errorf("Config already exists! Please use the config update command to modify the property")
@@ -83,6 +85,10 @@ func CreateConfig(c *Config) error {
     return nil
 }
 
-func UpdateConfig(c *Config) error {
+func UpdateConfig(configDirPath string, c *ConfigUpdate) error {
+    // Read config
+    // Check if key present in json
+    // if not return error not a valid key
+    // if correct update the key
     return nil
 }

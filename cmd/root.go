@@ -30,8 +30,6 @@ var rootCmd = &cobra.Command{
     Short: "Connect with people and share your profile!",
     Long: fmt.Sprintf(`%sTouchbase helps to connect with people, share your profile with short 
 description sabout yourself and your resume/portfolio!`, generateBanner(constants.AppName)),
-
-    // TODO: validate token using env variable
 }
 
 // Execute adds all child commands to the root command and sets flags

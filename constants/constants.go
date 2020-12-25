@@ -3,9 +3,13 @@ package constants
 const (
     AppName = "touchbase"
 
-    TouchBaseToken = "TOUCHBASE_TOKEN"
+    GoogleApplicationCredentials = "GOOGLE_APPLICATION_CREDENTIALS"
+
+    TouchBaseToken     = "TOUCHBASE_TOKEN"
+    TouchBaseConfigDir = "TOUCHBASE_CONFIG_DIR"
 )
 
+// Separators.
 const (
     CommaSeparator = ","
 

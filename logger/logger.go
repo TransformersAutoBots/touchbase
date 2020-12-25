@@ -15,7 +15,8 @@ type LogInstance struct {
     logInitialized sync.Once
     log            *zap.Logger
 
-    senderDetailsInitialized sync.Once
+    configUpdateDetails sync.Once
+    // senderDetailsInitialized sync.Once
 }
 
 // logConfig holds information necessary for customizing the logger.
@@ -25,17 +26,17 @@ type logConfig struct {
     enableTime bool
 }
 
-// AddSenderDetails adds the sender details to root logging.
+// AddConfigUpdateDetails adds the updated config details to root logging.
 //
 // Args:
 //   v: the sender details
 //   logInstance: the log instance for the current event
 // Return:
-//   the log instance with sender details for the current event
-func AddSenderDetails(v interface{}, logInstance *LogInstance) *LogInstance {
-    logInstance.senderDetailsInitialized.Do(func() {
+//   the log instance with the updated config details
+func AddConfigUpdateDetails(v interface{}, logInstance *LogInstance) *LogInstance {
+    logInstance.configUpdateDetails.Do(func() {
         logInstance.log = logInstance.log.With(
-            convertToField("senderDetails", v),
+            convertToField("configUpdateDetails", v),
         )
     })
     return logInstance
