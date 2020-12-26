@@ -2,20 +2,18 @@ package cmd
 
 import (
     "fmt"
+    "os"
 
     "github.com/spf13/cobra"
 
+    "github.com/autobots/touchbase/constants"
     "github.com/autobots/touchbase/touchbasemanager"
     "github.com/autobots/touchbase/utils"
-
-    "github.com/autobots/touchbase/constants"
     "github.com/autobots/touchbase/validations"
 )
 
 const (
-    user          = "user"
-    password      = "password"
-    dataFilePath  = "data-file"
+    spreadSheet   = "spreadsheet"
     configDirPath = "config-dir"
 )
 
@@ -30,12 +28,11 @@ the necessary config files required for the application to run.`, generateBanner
         // Initialize Logging
         initLogging(constants.ConsoleFormat, debugMode)
 
-        if err := validations.ValidateAppToken(constants.TouchBaseToken); err != nil {
+        if err := ensureAbsPath(configs); err != nil {
             return err
         }
 
-        // Clean the dir/file path
-        if err := ensureAbsPath(configs); err != nil {
+        if err := validations.ValidateGoogleApplicationCredentials(os.Getenv(constants.GoogleApplicationCredentials)); err != nil {
             return err
         }
 
@@ -57,26 +54,14 @@ the necessary config files required for the application to run.`, generateBanner
 }
 
 func init() {
-    configInitCmd.Flags().StringVarP(&configs.User, user, "u", "", "The user email address")
-    _ = configInitCmd.MarkFlagRequired(user)
-
-    configInitCmd.Flags().StringVarP(&configs.Password, password, "p", "", "The user password")
-    _ = configInitCmd.MarkFlagRequired(password)
-
-    configInitCmd.Flags().StringVarP(&configs.DataFile, dataFilePath, "d", "", "The data file path")
-    _ = configInitCmd.MarkFlagRequired(dataFilePath)
+    configInitCmd.Flags().StringVar(&configs.SpreadsheetID, spreadSheet, "", "The Google spreadsheet id")
+    _ = configInitCmd.MarkFlagRequired(spreadSheet)
 
     configInitCmd.Flags().StringVar(&configs.Dir, configDirPath, ".", "The config dir path")
 }
 
 func ensureAbsPath(config *touchbasemanager.Config) error {
-    absPath, err := utils.GetAbsPath(config.DataFile)
-    if err != nil {
-        return err
-    }
-    config.DataFile = absPath
-
-    absPath, err = utils.GetAbsPath(config.Dir)
+    absPath, err := utils.GetAbsPath(config.Dir)
     if err != nil {
         return err
     }

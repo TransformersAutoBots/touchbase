@@ -27,11 +27,11 @@ var configUpdateCmd = &cobra.Command{
         // Initialize Logging
         initLogging(constants.ConsoleFormat, debugMode)
 
-        if err := validations.ValidateAppToken(constants.TouchBaseToken); err != nil {
+        if err := validations.ValidateGoogleApplicationCredentials(os.Getenv(constants.GoogleApplicationCredentials)); err != nil {
             return err
         }
 
-        if err := validations.ValidateEnvConfigDir(constants.TouchBaseConfigDir); err != nil {
+        if err := validations.ValidateConfigDir(os.Getenv(constants.TouchBaseConfigDir)); err != nil {
             return err
         }
         return nil

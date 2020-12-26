@@ -1,11 +1,12 @@
 package utils
 
 import (
-	"encoding/json"
-	"os"
-	"path/filepath"
+    "encoding/json"
+    "io"
+    "os"
+    "path/filepath"
 
-	"github.com/autobots/touchbase/constants"
+    "github.com/autobots/touchbase/constants"
 )
 
 // IsEmptyString checks if string is empty.
@@ -16,7 +17,7 @@ import (
 //   true: if string is empty
 //   false: otherwise
 func IsEmptyString(value string) bool {
-	return value == ""
+    return value == ""
 }
 
 // IsNotEmptyString checks if string is not empty.
@@ -27,7 +28,7 @@ func IsEmptyString(value string) bool {
 //   true: if string is not empty
 //   false: otherwise
 func IsNotEmptyString(value string) bool {
-	return !IsEmptyString(value)
+    return !IsEmptyString(value)
 }
 
 // Mkdir uses os.MkdirAll to create a directory named path, along with any
@@ -39,10 +40,10 @@ func IsNotEmptyString(value string) bool {
 // Return:
 //   error: if failed to to create dir
 func Mkdir(path string, perm os.FileMode) error {
-	if err := os.MkdirAll(path, perm); err != nil {
-		return err
-	}
-	return nil
+    if err := os.MkdirAll(path, perm); err != nil {
+        return err
+    }
+    return nil
 }
 
 // PrettyJson is like Marshal json but applies Indent to format the output.
@@ -55,11 +56,11 @@ func Mkdir(path string, perm os.FileMode) error {
 //   the indented json data
 //   error: if failed to marshal and indent json data
 func PrettyJson(v interface{}) ([]byte, error) {
-	bytes, err := json.MarshalIndent(v, constants.JsonPrefix, constants.JsonIntend)
-	if err != nil {
-		return nil, err
-	}
-	return bytes, nil
+    bytes, err := json.MarshalIndent(v, constants.JsonPrefix, constants.JsonIntend)
+    if err != nil {
+        return nil, err
+    }
+    return bytes, nil
 }
 
 // CleanFilePath returns the shortest path name equivalent to path by purely
@@ -71,20 +72,28 @@ func PrettyJson(v interface{}) ([]byte, error) {
 // Return:
 //   the cleaned dir/file path
 func CleanFilePath(path string) string {
-	if IsEmptyString(path) {
-		return path
-	}
-	return filepath.Clean(path)
+    if IsEmptyString(path) {
+        return path
+    }
+    return filepath.Clean(path)
 }
 
 func GetAbsPath(path string) (string, error) {
-	if IsEmptyString(path) {
-		return path, nil
-	}
+    if IsEmptyString(path) {
+        return path, nil
+    }
 
-	absPath, err := filepath.Abs(path)
-	if err != nil {
-		return "", err
-	}
-	return CleanFilePath(absPath), nil
+    absPath, err := filepath.Abs(path)
+    if err != nil {
+        return "", err
+    }
+    return CleanFilePath(absPath), nil
+}
+
+func JsonEncoder(w io.Writer, v interface{}) error {
+    return json.NewEncoder(w).Encode(v)
+}
+
+func JsonDecoder(r io.Reader, v interface{}) error {
+    return json.NewDecoder(r).Decode(v)
 }

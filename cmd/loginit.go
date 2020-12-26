@@ -1,6 +1,7 @@
 package cmd
 
 import (
+    "github.com/autobots/touchbase/gcpclients"
     "github.com/autobots/touchbase/touchbasemanager"
     "go.uber.org/zap"
     "go.uber.org/zap/zapcore"
@@ -23,6 +24,7 @@ func initLogging(logFormat string, enableDebugMode bool) {
 
     // Pass the same logger for components
     touchbasemanager.InitLogger(logger)
+    gcpclients.InitLogger(logger)
     // configs.InitLogger(logger)
 }
 

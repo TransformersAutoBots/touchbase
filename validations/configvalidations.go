@@ -1,55 +1,47 @@
 package validations
 
 import (
-    "os"
-
-    "github.com/autobots/touchbase/touchbasemanager"
-    "github.com/autobots/touchbase/utils"
+    lg "log"
+    "reflect"
 
     ut "github.com/go-playground/universal-translator"
     "github.com/go-playground/validator/v10"
     "github.com/pkg/errors"
+
+    "github.com/autobots/touchbase/gcpclients"
+    "github.com/autobots/touchbase/touchbasemanager"
 )
 
 const (
     // touchbasemanager.Config struct json validation names
-    fileExistsTag = "fileExists"
-    dirExistsTag  = "dirExists"
-
-    // touchbasemanager.Config struct json keys
-    dataFilePath  = "data_file"
-    configDirPath = "dir"
+    validateSpreadsheetTag = "validateSpreadsheet"
+    validateDirTag         = "validateDir"
 )
 
-func validateFileExists(fl validator.FieldLevel) bool {
-    if utils.IsEmptyString(fl.Field().String()) {
-        return false
+func spreadsheetTranslationFunc(ut ut.Translator, fe validator.FieldError) string {
+    t, err := ut.T(fe.Tag(), fe.StructField(), reflect.ValueOf(fe.Value()).String())
+    if err != nil {
+        return err.Error()
     }
-    fileInfo, err := os.Stat(fl.Field().String())
-    if err != nil && os.IsNotExist(err) {
-        return false
-    }
-    return !fileInfo.IsDir()
+    return t
 }
 
-func validateDirPath(path string) bool {
-    if utils.IsEmptyString(path) {
-        return false
-    }
-    fileInfo, err := os.Stat(path)
-    if err != nil && os.IsNotExist(err) {
-        return false
-    }
-    return fileInfo.IsDir()
+func isValidSpreadsheet(fl validator.FieldLevel) bool {
+    _, err := gcpclients.RetrieveSpreadsheet(fl.Field().String())
+    lg.Println(err)
+    return err == nil
 }
 
-func validateDirExists(fl validator.FieldLevel) bool {
+func dirTranslationFunc(ut ut.Translator, fe validator.FieldError) string {
+    t, err := ut.T(fe.Tag(), fe.Field(), reflect.ValueOf(fe.Value()).String())
+    if err != nil {
+        return err.Error()
+    }
+    return t
+}
+
+func isValidDir(fl validator.FieldLevel) bool {
     return validateDirPath(fl.Field().String())
-}
-
-// customValidationError returns the custom validation error message.
-func customValidationError(tag, errorMessage string) error {
-    return errors.Errorf("failed to register %s custom validation. Reason: %s", tag, errorMessage)
 }
 
 func newConfigValidator() (ut.Translator, error) {
@@ -58,32 +50,35 @@ func newConfigValidator() (ut.Translator, error) {
         return nil, err
     }
 
-    err = validate.RegisterValidation(fileExistsTag, validateFileExists)
+    err = validate.RegisterValidation(validateSpreadsheetTag, isValidSpreadsheet)
     if err != nil {
-        return nil, customValidationError(fileExistsTag, err.Error())
+        return nil, customValidationError(validateSpreadsheetTag, err.Error())
     }
 
-    err = validate.RegisterValidation(dirExistsTag, validateDirExists)
+    err = validate.RegisterValidation(validateDirTag, isValidDir)
     if err != nil {
-        return nil, customValidationError(dirExistsTag, err.Error())
+        return nil, customValidationError(validateDirTag, err.Error())
     }
 
     translations := []struct {
-        tag         string
-        translation string
+        tag             string
+        translation     string
+        translationFunc validator.TranslationFunc
     }{
         {
-            tag:         fileExistsTag,
-            translation: "data file does not exists at location",
+            tag:             validateDirTag,
+            translation:     "{0}: {1} is not valid dir",
+            translationFunc: dirTranslationFunc,
         },
         {
-            tag:         dirExistsTag,
-            translation: "invalid config file path",
+            tag:             validateSpreadsheetTag,
+            translation:     "{0}: {1} is not valid",
+            translationFunc: spreadsheetTranslationFunc,
         },
     }
 
     for _, t := range translations {
-        err = validate.RegisterTranslation(t.tag, trans, registrationFunc(t.tag, t.translation), translationFunc)
+        err = validate.RegisterTranslation(t.tag, trans, registrationFunc(t.tag, t.translation), t.translationFunc)
         if err != nil {
             panic(err)
         }
@@ -100,10 +95,8 @@ func ValidateConfig(config *touchbasemanager.Config) error {
     if err := validate.Struct(config); err != nil {
         errs := err.(validator.ValidationErrors)
         for _, e := range errs {
-            if e.Field() == dataFilePath || e.Field() == configDirPath {
-                return errors.Errorf("%s %s", e.Translate(trans), e.Value())
-            }
-            return errors.Errorf("%s. Current Value: %s", e.Translate(trans), e.Value())
+            lg.Println(e.Translate(trans))
+            return errors.New(e.Translate(trans))
         }
     }
     return nil

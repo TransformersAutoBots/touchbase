@@ -1,7 +1,6 @@
 package validations
 
 import (
-    "os"
     "reflect"
     "strings"
 
@@ -10,8 +9,6 @@ import (
     "github.com/go-playground/validator/v10"
     entranslations "github.com/go-playground/validator/v10/translations/en"
     "github.com/pkg/errors"
-
-    "github.com/autobots/touchbase/utils"
 
     "github.com/autobots/touchbase/constants"
 )
@@ -50,32 +47,14 @@ func registrationFunc(tag string, translation string) validator.RegisterTranslat
 }
 
 func translationFunc(ut ut.Translator, fe validator.FieldError) string {
-    t, err := ut.T(fe.Tag(), reflect.ValueOf(fe.Value()).String(), fe.Param())
+    t, err := ut.T(fe.Tag(), reflect.ValueOf(fe.Value()).String())
     if err != nil {
-        return fe.(error).Error()
+        return err.Error()
     }
     return t
 }
 
-func ValidateAppToken(keyName string) error {
-    if utils.IsEmptyString(os.Getenv(keyName)) {
-        return errors.Errorf("Missing Env Key: %s. Use export|SET %s command based on your operating system", keyName, keyName)
-    }
-    return nil
-}
-
-func ValidateEnvConfigDir(keyName string) error {
-    if err := ValidateAppToken(keyName); err != nil {
-        return err
-    }
-
-    absPath, err := utils.GetAbsPath(os.Getenv(keyName))
-    if err != nil {
-        return err
-    }
-
-    if !validateDirPath(absPath) {
-        return errors.Errorf("The config dir path: %s is not valid", absPath)
-    }
-    return nil
+// customValidationError returns the custom validation error message.
+func customValidationError(tag, errorMessage string) error {
+    return errors.Errorf("failed to register %s custom validation. Reason: %s", tag, errorMessage)
 }

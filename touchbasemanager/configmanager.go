@@ -5,6 +5,7 @@ import (
     "os"
 
     "github.com/pkg/errors"
+    "github.com/ulule/deepcopier"
 
     "github.com/autobots/touchbase/configs"
     "github.com/autobots/touchbase/constants"
@@ -48,7 +49,7 @@ func (c *Config) generateConfigFile() error {
         return err
     }
 
-    //goland:noinspection ALL
+    //goland:noinspection GoNilness
     defer file.Close()
     return nil
 }
@@ -71,7 +72,17 @@ func CreateConfig(c *Config) error {
         return err
     }
 
-    config := configs.New(c.getConfigFilePath(), c)
+    configToSave := &configToSave{}
+    if err := deepcopier.Copy(configToSave).From(c); err != nil {
+        getLogger().With(
+            log.Attribute("config", c),
+        ).Error("Error in copying data to config to save", log.TouchBaseError(&types.Log{
+            Reason: err.Error(),
+        }))
+        return err
+    }
+
+    config := configs.New(c.getConfigFilePath(), configToSave)
     if err := config.Create(); err != nil {
         getLogger().With(
             log.Attribute("configDirPath", c.getConfigDirPath()),
