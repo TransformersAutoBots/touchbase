@@ -13,7 +13,7 @@ import (
 )
 
 const (
-    // touchbasemanager.Config struct json validation names
+    // touchbasemanager.ConfigInit struct json validation names
     validateSpreadsheetTag = "validateSpreadsheet"
     validateDirTag         = "validateDir"
 )
@@ -86,7 +86,7 @@ func newConfigValidator() (ut.Translator, error) {
     return trans, nil
 }
 
-func ValidateConfig(config *touchbasemanager.Config) error {
+func ValidateConfig(config *touchbasemanager.ConfigInit) error {
     trans, err := newConfigValidator()
     if err != nil {
         return err

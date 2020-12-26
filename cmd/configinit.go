@@ -17,6 +17,10 @@ const (
     configDirPath = "config-dir"
 )
 
+var (
+    configInit = &touchbasemanager.ConfigInit{}
+)
+
 // configInitCmd represents the touchbase config init command
 var configInitCmd = &cobra.Command{
     Use:   "init",
@@ -28,7 +32,7 @@ the necessary config files required for the application to run.`, generateBanner
         // Initialize Logging
         initLogging(constants.ConsoleFormat, debugMode)
 
-        if err := ensureAbsPath(configs); err != nil {
+        if err := ensureAbsPath(configInit); err != nil {
             return err
         }
 
@@ -37,7 +41,7 @@ the necessary config files required for the application to run.`, generateBanner
         }
 
         // Validate the email address and data file path
-        if err := validations.ValidateConfig(configs); err != nil {
+        if err := validations.ValidateConfig(configInit); err != nil {
             return err
         }
         return nil
@@ -45,7 +49,7 @@ the necessary config files required for the application to run.`, generateBanner
 
     RunE: func(cmd *cobra.Command, args []string) error {
         getLogger().Debug("Initializing application configs... ")
-        err := touchbasemanager.CreateConfig(configs)
+        err := touchbasemanager.CreateConfig(configInit)
         if err != nil {
             return err
         }
@@ -54,13 +58,13 @@ the necessary config files required for the application to run.`, generateBanner
 }
 
 func init() {
-    configInitCmd.Flags().StringVar(&configs.SpreadsheetID, spreadSheet, "", "The Google spreadsheet id")
+    configInitCmd.Flags().StringVar(&configInit.SpreadsheetID, spreadSheet, "", "The Google spreadsheet id")
     _ = configInitCmd.MarkFlagRequired(spreadSheet)
 
-    configInitCmd.Flags().StringVar(&configs.Dir, configDirPath, ".", "The config dir path")
+    configInitCmd.Flags().StringVar(&configInit.Dir, configDirPath, ".", "The config dir path")
 }
 
-func ensureAbsPath(config *touchbasemanager.Config) error {
+func ensureAbsPath(config *touchbasemanager.ConfigInit) error {
     absPath, err := utils.GetAbsPath(config.Dir)
     if err != nil {
         return err

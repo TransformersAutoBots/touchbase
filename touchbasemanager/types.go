@@ -1,12 +1,12 @@
 package touchbasemanager
 
-type Config struct {
+type ConfigInit struct {
     SpreadsheetID string `json:"spreadsheet_id" validate:"required,validateSpreadsheet"`
     Dir           string `json:"dir" validate:"required,validateDir"`
 }
 
-type configToSave struct {
-    SpreadsheetID string `deepcopier:"field:SpreadsheetID"`
+type config struct {
+    SpreadsheetID string `json:"spreadsheet_id" deepcopier:"field:SpreadsheetID"`
 }
 
 type ConfigUpdate struct {

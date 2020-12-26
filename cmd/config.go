@@ -10,7 +10,6 @@ import (
 )
 
 var (
-    configs       = &touchbasemanager.Config{}
     configsUpdate = &touchbasemanager.ConfigUpdate{}
 )
 

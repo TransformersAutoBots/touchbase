@@ -18,11 +18,11 @@ const (
     configFileName = "config"
 )
 
-func (c *Config) getConfigDirPath() string {
+func (c *ConfigInit) getConfigDirPath() string {
     return fmt.Sprintf("%s/.%s", c.Dir, constants.AppName)
 }
 
-func (c *Config) generateConfigDir() error {
+func (c *ConfigInit) generateConfigDir() error {
     err := utils.Mkdir(c.getConfigDirPath(), 0766)
     if err != nil {
         return err
@@ -30,11 +30,11 @@ func (c *Config) generateConfigDir() error {
     return nil
 }
 
-func (c *Config) getConfigFilePath() string {
+func (c *ConfigInit) getConfigFilePath() string {
     return fmt.Sprintf("%s/%s", c.getConfigDirPath(), configFileName)
 }
 
-func (c *Config) generateConfigFile() error {
+func (c *ConfigInit) generateConfigFile() error {
     // E.g: ./.{app_name}/config
     configFile := c.getConfigFilePath()
 
@@ -54,7 +54,7 @@ func (c *Config) generateConfigFile() error {
     return nil
 }
 
-func CreateConfig(c *Config) error {
+func CreateConfig(c *ConfigInit) error {
     if err := c.generateConfigDir(); err != nil {
         getLogger().With(
             log.Attribute("configDirPath", c.getConfigDirPath()),
@@ -72,7 +72,7 @@ func CreateConfig(c *Config) error {
         return err
     }
 
-    configToSave := &configToSave{}
+    configToSave := &config{}
     if err := deepcopier.Copy(configToSave).From(c); err != nil {
         getLogger().With(
             log.Attribute("config", c),
