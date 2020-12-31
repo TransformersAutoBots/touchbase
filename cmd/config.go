@@ -6,11 +6,8 @@ import (
     "github.com/spf13/cobra"
 
     "github.com/autobots/touchbase/constants"
-    "github.com/autobots/touchbase/touchbasemanager"
-)
-
-var (
-    configsUpdate = &touchbasemanager.ConfigUpdate{}
+    "github.com/autobots/touchbase/utils"
+    "github.com/autobots/touchbase/validations"
 )
 
 // configCmd represents the touchbase config command
@@ -34,4 +31,15 @@ func init() {
     // Add sub commands
     configCmd.AddCommand(configInitCmd)
     configCmd.AddCommand(configUpdateCmd)
+}
+
+func validateEnvVars() error {
+    if err := validations.ValidateGoogleApplicationCredentials(utils.GetEnv(constants.GoogleApplicationCredentials)); err != nil {
+        return err
+    }
+
+    if err := validations.ValidateConfigDir(utils.GetEnv(constants.TouchBaseConfigDir)); err != nil {
+        return err
+    }
+    return nil
 }

@@ -5,7 +5,6 @@ import (
     "os"
 
     "github.com/pkg/errors"
-    "github.com/ulule/deepcopier"
 
     "github.com/autobots/touchbase/configs"
     "github.com/autobots/touchbase/constants"
@@ -18,11 +17,15 @@ const (
     configFileName = "config"
 )
 
-func (c *ConfigInit) getConfigDirPath() string {
-    return fmt.Sprintf("%s/.%s", c.Dir, constants.AppName)
+func getConfigDirEnvVar() string {
+    return utils.GetEnv(constants.TouchBaseConfigDir)
 }
 
-func (c *ConfigInit) generateConfigDir() error {
+func (c *Config) getConfigDirPath() string {
+    return fmt.Sprintf("%s/.%s", getConfigDirEnvVar(), constants.AppName)
+}
+
+func (c *Config) generateConfigDir() error {
     err := utils.Mkdir(c.getConfigDirPath(), 0766)
     if err != nil {
         return err
@@ -30,11 +33,11 @@ func (c *ConfigInit) generateConfigDir() error {
     return nil
 }
 
-func (c *ConfigInit) getConfigFilePath() string {
+func (c *Config) getConfigFilePath() string {
     return fmt.Sprintf("%s/%s", c.getConfigDirPath(), configFileName)
 }
 
-func (c *ConfigInit) generateConfigFile() error {
+func (c *Config) generateConfigFile() error {
     // E.g: ./.{app_name}/config
     configFile := c.getConfigFilePath()
 
@@ -54,7 +57,7 @@ func (c *ConfigInit) generateConfigFile() error {
     return nil
 }
 
-func CreateConfig(c *ConfigInit) error {
+func CreateConfig(c *Config) error {
     if err := c.generateConfigDir(); err != nil {
         getLogger().With(
             log.Attribute("configDirPath", c.getConfigDirPath()),
@@ -72,18 +75,8 @@ func CreateConfig(c *ConfigInit) error {
         return err
     }
 
-    configToSave := &config{}
-    if err := deepcopier.Copy(configToSave).From(c); err != nil {
-        getLogger().With(
-            log.Attribute("config", c),
-        ).Error("Error in copying data to config to save", log.TouchBaseError(&types.Log{
-            Reason: err.Error(),
-        }))
-        return err
-    }
-
-    config := configs.New(c.getConfigFilePath(), configToSave)
-    if err := config.Create(); err != nil {
+    configImpl := configs.New(c.getConfigFilePath(), c)
+    if err := configImpl.Create(); err != nil {
         getLogger().With(
             log.Attribute("configDirPath", c.getConfigDirPath()),
             log.Attribute("configFileName", configFileName),

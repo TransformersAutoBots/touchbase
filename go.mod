@@ -13,6 +13,7 @@ require (
 	github.com/mattn/go-colorable v0.1.8 // indirect
 	github.com/pkg/errors v0.9.1
 	github.com/spf13/cobra v1.0.0
+	github.com/spf13/viper v1.4.0
 	github.com/ulule/deepcopier v0.0.0-20200430083143-45decc6639b6
 	go.uber.org/zap v1.16.0
 	golang.org/x/net v0.0.0-20201224014010-6772e930b67b

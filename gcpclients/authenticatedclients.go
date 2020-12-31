@@ -19,12 +19,12 @@ import (
 )
 
 const (
-    sheetsTokenFileName = "sheetsToken." + constants.JsonFormat
-    gmailTokenFileName  = "gmailToken." + constants.JsonFormat
+    sheetsTokenFileName = "sheetsToken" + constants.DotSeparator + constants.JsonFormat
+    gmailTokenFileName  = "gmailToken" + constants.DotSeparator + constants.JsonFormat
 )
 
 func getAppCredentialsFilePath() string {
-    return os.Getenv(constants.GoogleApplicationCredentials)
+    return utils.GetEnv(constants.GoogleApplicationCredentials)
 }
 
 func getTokenBasePath() string {

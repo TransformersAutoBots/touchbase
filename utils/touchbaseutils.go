@@ -87,7 +87,7 @@ func GetAbsPath(path string) (string, error) {
     if err != nil {
         return "", err
     }
-    return CleanFilePath(absPath), nil
+    return absPath, nil
 }
 
 func JsonEncoder(w io.Writer, v interface{}) error {
@@ -96,4 +96,8 @@ func JsonEncoder(w io.Writer, v interface{}) error {
 
 func JsonDecoder(r io.Reader, v interface{}) error {
     return json.NewDecoder(r).Decode(v)
+}
+
+func GetEnv(envKey string) string {
+    return os.Getenv(envKey)
 }

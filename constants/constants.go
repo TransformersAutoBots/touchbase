@@ -12,6 +12,7 @@ const (
 // Separators.
 const (
     CommaSeparator = ","
+    DotSeparator   = "."
 
     JsonPrefix = ""
     JsonIntend = "  "
