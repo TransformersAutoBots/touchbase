@@ -9,7 +9,7 @@ import (
     "github.com/pkg/errors"
 
     "github.com/autobots/touchbase/gcpclients"
-    "github.com/autobots/touchbase/touchbasemanager"
+    "github.com/autobots/touchbase/types"
 )
 
 const (
@@ -62,7 +62,7 @@ func newConfigValidator() (ut.Translator, error) {
     return trans, nil
 }
 
-func ValidateConfig(config *touchbasemanager.Config) error {
+func ValidateConfig(config *types.Config) error {
     trans, err := newConfigValidator()
     if err != nil {
         return err

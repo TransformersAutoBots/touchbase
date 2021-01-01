@@ -1,9 +1,5 @@
 package touchbasemanager
 
-type Config struct {
-    SpreadsheetID string `json:"spreadsheetid" validate:"required,validateSpreadsheet"`
-}
-
 type ConfigUpdate struct {
     Key   string `json:"key"`
     Value string `json:"value"`

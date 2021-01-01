@@ -7,16 +7,16 @@ import (
 
     "github.com/autobots/touchbase/constants"
     "github.com/autobots/touchbase/touchbasemanager"
+    "github.com/autobots/touchbase/types"
     "github.com/autobots/touchbase/validations"
 )
 
 const (
     spreadSheet   = "spreadsheet"
-    configDirPath = "config-dir"
 )
 
 var (
-    config = &touchbasemanager.Config{}
+    config = &types.Config{}
 )
 
 // configInitCmd represents the touchbase config init command

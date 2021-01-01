@@ -33,7 +33,7 @@ func getConfigFilePath() string {
     return fmt.Sprintf("%s/%s", getConfigDirPath(), configFileName)
 }
 
-func (c *Config) generateConfigDir() error {
+func generateConfigDir() error {
     err := utils.Mkdir(getConfigDirPath(), 0766)
     if err != nil {
         return err
@@ -41,7 +41,7 @@ func (c *Config) generateConfigDir() error {
     return nil
 }
 
-func (c *Config) generateConfigFile() error {
+func generateConfigFile() error {
     // E.g: ./.{app_name}/config
     configFile := getConfigFilePath()
 
@@ -61,8 +61,8 @@ func (c *Config) generateConfigFile() error {
     return nil
 }
 
-func CreateConfig(c *Config) error {
-    if err := c.generateConfigDir(); err != nil {
+func CreateConfig(c *types.Config) error {
+    if err := generateConfigDir(); err != nil {
         getLogger().With(
             log.Attribute("configDirPath", getConfigDirPath()),
         ).Error("Failed to create the required config dir", log.TouchBaseError(&types.Log{
@@ -71,7 +71,7 @@ func CreateConfig(c *Config) error {
         return err
     }
 
-    if err := c.generateConfigFile(); err != nil {
+    if err := generateConfigFile(); err != nil {
         getLogger().With(
             log.Attribute("configDirPath", getConfigDirPath()),
             log.Attribute("configFileName", configFileName),
@@ -134,7 +134,7 @@ func UpdateConfig(c *ConfigUpdate) error {
         return err
     }
 
-    updatedConfig := &Config{}
+    updatedConfig := &types.Config{}
     err = utils.UnmarshalJson(newConfig, updatedConfig)
     if err != nil {
         getLogger().Error("Failed to unmarshal json", log.TouchBaseError(&types.Log{
@@ -143,6 +143,7 @@ func UpdateConfig(c *ConfigUpdate) error {
         return err
     }
 
+    // Validate the email address and data file path
     if err := validations.ValidateConfig(updatedConfig); err != nil {
         return err
     }
