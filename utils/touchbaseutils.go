@@ -63,6 +63,22 @@ func PrettyJson(v interface{}) ([]byte, error) {
     return bytes, nil
 }
 
+// UnmarshalJson parses the JSON-encoded data and stores the result
+// in the value pointed by v.
+//
+// Args:
+//   data: the JSON encoded data
+//   v: the reference of object
+// Return:
+//   error: if failed to unmarshal JSON to object
+func UnmarshalJson(data []byte, v interface{}) error {
+    err := json.Unmarshal(data, v)
+    if err != nil {
+        return err
+    }
+    return nil
+}
+
 // CleanFilePath returns the shortest path name equivalent to path by purely
 // lexical processing. It applies the following rules iteratively until no
 // further processing can be done.

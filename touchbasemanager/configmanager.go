@@ -2,15 +2,19 @@ package touchbasemanager
 
 import (
     "fmt"
+    "io/ioutil"
     "os"
 
     "github.com/pkg/errors"
+    "github.com/tidwall/gjson"
+    "github.com/tidwall/sjson"
 
     "github.com/autobots/touchbase/configs"
     "github.com/autobots/touchbase/constants"
     log "github.com/autobots/touchbase/logger"
     "github.com/autobots/touchbase/types"
     "github.com/autobots/touchbase/utils"
+    "github.com/autobots/touchbase/validations"
 )
 
 const (
@@ -21,25 +25,25 @@ func getConfigDirEnvVar() string {
     return utils.GetEnv(constants.TouchBaseConfigDir)
 }
 
-func (c *Config) getConfigDirPath() string {
+func getConfigDirPath() string {
     return fmt.Sprintf("%s/.%s", getConfigDirEnvVar(), constants.AppName)
 }
 
+func getConfigFilePath() string {
+    return fmt.Sprintf("%s/%s", getConfigDirPath(), configFileName)
+}
+
 func (c *Config) generateConfigDir() error {
-    err := utils.Mkdir(c.getConfigDirPath(), 0766)
+    err := utils.Mkdir(getConfigDirPath(), 0766)
     if err != nil {
         return err
     }
     return nil
 }
 
-func (c *Config) getConfigFilePath() string {
-    return fmt.Sprintf("%s/%s", c.getConfigDirPath(), configFileName)
-}
-
 func (c *Config) generateConfigFile() error {
     // E.g: ./.{app_name}/config
-    configFile := c.getConfigFilePath()
+    configFile := getConfigFilePath()
 
     // Config already exists
     fileInfo, err := os.Stat(configFile)
@@ -60,7 +64,7 @@ func (c *Config) generateConfigFile() error {
 func CreateConfig(c *Config) error {
     if err := c.generateConfigDir(); err != nil {
         getLogger().With(
-            log.Attribute("configDirPath", c.getConfigDirPath()),
+            log.Attribute("configDirPath", getConfigDirPath()),
         ).Error("Failed to create the required config dir", log.TouchBaseError(&types.Log{
             Reason: err.Error(),
         }))
@@ -69,16 +73,16 @@ func CreateConfig(c *Config) error {
 
     if err := c.generateConfigFile(); err != nil {
         getLogger().With(
-            log.Attribute("configDirPath", c.getConfigDirPath()),
+            log.Attribute("configDirPath", getConfigDirPath()),
             log.Attribute("configFileName", configFileName),
         ).Error("Failed to create the config file")
         return err
     }
 
-    configImpl := configs.New(c.getConfigFilePath(), c)
+    configImpl := configs.New(getConfigFilePath(), c)
     if err := configImpl.Create(); err != nil {
         getLogger().With(
-            log.Attribute("configDirPath", c.getConfigDirPath()),
+            log.Attribute("configDirPath", getConfigDirPath()),
             log.Attribute("configFileName", configFileName),
             log.Attribute("configData", c),
         ).Error("Failed to write the data to the config file", log.TouchBaseError(&types.Log{
@@ -89,10 +93,70 @@ func CreateConfig(c *Config) error {
     return nil
 }
 
-func UpdateConfig(configDirPath string, c *ConfigUpdate) error {
-    // Read config
-    // Check if key present in json
-    // if not return error not a valid key
-    // if correct update the key
+func readConfigFile(configFilePath string) ([]byte, error) {
+    configData, err := ioutil.ReadFile(configFilePath)
+    if err != nil {
+        return nil, err
+    }
+    return configData, nil
+}
+
+func checkKeyExists(bytesData []byte, key string) bool {
+    return gjson.GetBytes(bytesData, key).Exists()
+}
+
+func UpdateConfig(c *ConfigUpdate) error {
+    configFilePath := getConfigFilePath()
+    oldConfig, err := readConfigFile(configFilePath)
+    if err != nil {
+        getLogger().With(
+            log.Attribute("configDirPath", getConfigDirPath()),
+            log.Attribute("configFileName", configFileName),
+        ).Error("Error in reading existing config file", log.TouchBaseError(&types.Log{
+            Reason: err.Error(),
+        }))
+        return err
+    }
+
+    if !checkKeyExists(oldConfig, c.Key) {
+        return errors.Errorf("Key: %s not found in config file", c.Key)
+    }
+
+    newConfig, err := sjson.SetBytes(oldConfig, c.Key, c.Value)
+    if err != nil {
+        getLogger().With(
+            log.Attribute("configDirPath", getConfigDirPath()),
+            log.Attribute("configFileName", configFileName),
+            log.Attribute("input", c),
+        ).Error("Error in updating key value", log.TouchBaseError(&types.Log{
+            Reason: err.Error(),
+        }))
+        return err
+    }
+
+    updatedConfig := &Config{}
+    err = utils.UnmarshalJson(newConfig, updatedConfig)
+    if err != nil {
+        getLogger().Error("Failed to unmarshal json", log.TouchBaseError(&types.Log{
+            Reason: err.Error(),
+        }))
+        return err
+    }
+
+    if err := validations.ValidateConfig(updatedConfig); err != nil {
+        return err
+    }
+
+    configImpl := configs.New(configFilePath, updatedConfig)
+    if err := configImpl.Update(); err != nil {
+        getLogger().With(
+            log.Attribute("configDirPath", getConfigDirPath()),
+            log.Attribute("configFileName", configFileName),
+            log.Attribute("configData", updatedConfig),
+        ).Error("Failed to update the config data to the config file", log.TouchBaseError(&types.Log{
+            Reason: err.Error(),
+        }))
+        return err
+    }
     return nil
 }
