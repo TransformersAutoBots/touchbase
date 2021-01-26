@@ -27,9 +27,6 @@ var configInitCmd = &cobra.Command{
 the necessary config files required for the application to run.`, generateBanner(constants.AppName)),
 
     PreRunE: func(cmd *cobra.Command, args []string) error {
-        // Initialize Logging
-        initLogging(constants.ConsoleFormat, debugMode)
-
         if err := validateEnvVars(); err != nil {
             return err
         }

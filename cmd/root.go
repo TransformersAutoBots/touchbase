@@ -44,12 +44,19 @@ func Execute() {
 }
 
 func init() {
+    cobra.OnInitialize(initializeLogging)
+
     // Add sub commands
     rootCmd.AddCommand(configCmd)
+    rootCmd.AddCommand(emailCmd)
 
     // Define your flags
     rootCmd.PersistentFlags().BoolVarP(&debugMode, "debug", "X", false, "Enable debug mode (default false)")
 
     // Init validations
     validations.InitValidator()
+}
+
+func initializeLogging() {
+    initLogging(constants.ConsoleFormat, debugMode)
 }

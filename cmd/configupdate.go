@@ -25,9 +25,6 @@ var configUpdateCmd = &cobra.Command{
     Long:  fmt.Sprintf(`%sThe update command will update the config property of touchbase application.`, generateBanner(constants.AppName)),
 
     PreRunE: func(cmd *cobra.Command, args []string) error {
-        // Initialize Logging
-        initLogging(constants.ConsoleFormat, debugMode)
-
         if err := validateEnvVars(); err != nil {
             return err
         }

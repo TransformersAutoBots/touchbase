@@ -18,8 +18,6 @@ var configCmd = &cobra.Command{
 config files required for the touchbase application to run.`, generateBanner(constants.AppName)),
 
     PreRun: func(cmd *cobra.Command, args []string) {
-        // Initialize Logging
-        initLogging(constants.ConsoleFormat, debugMode)
     },
 
     Run: func(cmd *cobra.Command, args []string) {
