@@ -1,7 +1,6 @@
 package touchbasemanager
 
 import (
-    "fmt"
     "io/ioutil"
     "os"
 
@@ -10,7 +9,6 @@ import (
     "github.com/tidwall/sjson"
 
     "github.com/autobots/touchbase/configs"
-    "github.com/autobots/touchbase/constants"
     log "github.com/autobots/touchbase/logger"
     "github.com/autobots/touchbase/types"
     "github.com/autobots/touchbase/utils"
@@ -20,18 +18,6 @@ import (
 const (
     configFileName = "config"
 )
-
-func getConfigDirEnvVar() string {
-    return utils.GetEnv(constants.TouchBaseConfigDir)
-}
-
-func getConfigDirPath() string {
-    return fmt.Sprintf("%s/.%s", getConfigDirEnvVar(), constants.AppName)
-}
-
-func getConfigFilePath() string {
-    return fmt.Sprintf("%s/%s", getConfigDirPath(), configFileName)
-}
 
 func generateConfigDir() error {
     err := utils.Mkdir(getConfigDirPath(), 0766)
@@ -43,7 +29,7 @@ func generateConfigDir() error {
 
 func generateConfigFile() error {
     // E.g: ./.{app_name}/config
-    configFile := getConfigFilePath()
+    configFile := getConfigFilePathWithExt()
 
     // Config already exists
     fileInfo, err := os.Stat(configFile)
@@ -79,7 +65,7 @@ func CreateConfig(c *types.Config) error {
         return err
     }
 
-    configImpl := configs.New(getConfigFilePath(), c)
+    configImpl := configs.New(getConfigFilePathWithExt(), c)
     if err := configImpl.Create(); err != nil {
         getLogger().With(
             log.Attribute("configDirPath", getConfigDirPath()),
@@ -106,7 +92,7 @@ func checkKeyExists(bytesData []byte, key string) bool {
 }
 
 func UpdateConfig(c *ConfigUpdate) error {
-    configFilePath := getConfigFilePath()
+    configFilePath := getConfigFilePathWithExt()
     oldConfig, err := readConfigFile(configFilePath)
     if err != nil {
         getLogger().With(

@@ -1,7 +1,8 @@
 package validations
 
 import (
-    lg "log"
+    "fmt"
+    "path/filepath"
     "reflect"
 
     ut "github.com/go-playground/universal-translator"
@@ -13,8 +14,11 @@ import (
 )
 
 const (
+    pdfFormat = ".pdf"
+
     // touchbasemanager.Config struct json validation names
     validateSpreadsheetTag = "validateSpreadsheet"
+    validateResumeFileTag  = "validateResumeFile"
 )
 
 func spreadsheetTranslationFunc(ut ut.Translator, fe validator.FieldError) string {
@@ -25,9 +29,21 @@ func spreadsheetTranslationFunc(ut ut.Translator, fe validator.FieldError) strin
     return t
 }
 
+func resumeFileTranslationFunc(ut ut.Translator, fe validator.FieldError) string {
+    t, err := ut.T(fe.Tag(), fe.StructField(), reflect.ValueOf(fe.Value()).String())
+    if err != nil {
+        return err.Error()
+    }
+    return t
+}
+
 func isValidSpreadsheet(fl validator.FieldLevel) bool {
     _, err := gcpclients.RetrieveSpreadsheet(fl.Field().String())
     return err == nil
+}
+
+func isValidResumeFile(fl validator.FieldLevel) bool {
+    return validateFileExists(fl.Field().String()) && filepath.Ext(fl.Field().String()) == pdfFormat
 }
 
 func newConfigValidator() (ut.Translator, error) {
@@ -41,6 +57,11 @@ func newConfigValidator() (ut.Translator, error) {
         return nil, customValidationError(validateSpreadsheetTag, err.Error())
     }
 
+    err = validate.RegisterValidation(validateResumeFileTag, isValidResumeFile)
+    if err != nil {
+        return nil, customValidationError(validateResumeFileTag, err.Error())
+    }
+
     translations := []struct {
         tag             string
         translation     string
@@ -50,6 +71,11 @@ func newConfigValidator() (ut.Translator, error) {
             tag:             validateSpreadsheetTag,
             translation:     "{0}: {1} is not valid",
             translationFunc: spreadsheetTranslationFunc,
+        },
+        {
+            tag:             validateResumeFileTag,
+            translation:     fmt.Sprintf("{0}: {1} is not a valid resume file. Either the file does not exists or it is not a %s file", pdfFormat),
+            translationFunc: resumeFileTranslationFunc,
         },
     }
 
@@ -71,7 +97,6 @@ func ValidateConfig(config *types.Config) error {
     if err := validate.Struct(config); err != nil {
         errs := err.(validator.ValidationErrors)
         for _, e := range errs {
-            lg.Println(e.Translate(trans))
             return errors.New(e.Translate(trans))
         }
     }

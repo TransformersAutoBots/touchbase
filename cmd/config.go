@@ -17,9 +17,6 @@ var configCmd = &cobra.Command{
     Long: fmt.Sprintf(`%sThe config command along with its subcommand will initialize the necessary 
 config files required for the touchbase application to run.`, generateBanner(constants.AppName)),
 
-    PreRun: func(cmd *cobra.Command, args []string) {
-    },
-
     Run: func(cmd *cobra.Command, args []string) {
         getLogger().Info(`Config command should be used with one of its subcommand. For list of subcommands run "touchbase config --help"`)
     },

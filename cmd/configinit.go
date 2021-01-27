@@ -8,11 +8,15 @@ import (
     "github.com/autobots/touchbase/constants"
     "github.com/autobots/touchbase/touchbasemanager"
     "github.com/autobots/touchbase/types"
+    "github.com/autobots/touchbase/utils"
     "github.com/autobots/touchbase/validations"
 )
 
 const (
-    spreadSheet   = "spreadsheet"
+    spreadsheetID = "spreadsheet-id"
+    fullName      = "full-name"
+    email         = "email"
+    resume        = "resume"
 )
 
 var (
@@ -30,6 +34,12 @@ the necessary config files required for the application to run.`, generateBanner
         if err := validateEnvVars(); err != nil {
             return err
         }
+
+        resumeAbsPath, err := utils.GetAbsPath(config.User.Resume)
+        if err != nil {
+            return err
+        }
+        config.User.Resume = resumeAbsPath
 
         // Validate the email address and data file path
         if err := validations.ValidateConfig(config); err != nil {
@@ -49,6 +59,15 @@ the necessary config files required for the application to run.`, generateBanner
 }
 
 func init() {
-    configInitCmd.Flags().StringVar(&config.SpreadsheetID, spreadSheet, "", "The Google spreadsheet id")
-    _ = configInitCmd.MarkFlagRequired(spreadSheet)
+    configInitCmd.Flags().StringVar(&config.SpreadsheetID, spreadsheetID, "", "The Google spreadsheet id")
+    _ = configInitCmd.MarkFlagRequired(spreadsheetID)
+
+    configInitCmd.Flags().StringVar(&config.User.FullName, fullName, "", "The user full name")
+    _ = configInitCmd.MarkFlagRequired(fullName)
+
+    configInitCmd.Flags().StringVar(&config.User.EmailID, email, "", "The user email id (Must be a gmail account)")
+    _ = configInitCmd.MarkFlagRequired(email)
+
+    configInitCmd.Flags().StringVar(&config.User.Resume, resume, "", "The user resume file location along with file name")
+    _ = configInitCmd.MarkFlagRequired(resume)
 }
