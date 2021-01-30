@@ -20,3 +20,12 @@ func RetrieveSheetsInSpreadsheet(spreadsheetID string) ([]*sheets.Sheet, error) 
     }
     return spreadsheet.Sheets, nil
 }
+
+func RetrieveSheetData(spreadsheetID, readRange string) (*sheets.ValueRange, error) {
+    sheetsService := Sheets()
+    sheetData, err := sheetsService.Spreadsheets.Values.Get(spreadsheetID, readRange).Do()
+    if err != nil {
+        return nil, err
+    }
+    return sheetData, nil
+}

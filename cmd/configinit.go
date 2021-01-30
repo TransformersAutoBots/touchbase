@@ -15,7 +15,7 @@ import (
 const (
     spreadsheetID = "spreadsheet-id"
     fullName      = "full-name"
-    email         = "email"
+    emailID       = "email"
     resume        = "resume"
 )
 
@@ -65,8 +65,8 @@ func init() {
     configInitCmd.Flags().StringVar(&config.User.FullName, fullName, "", "The user full name")
     _ = configInitCmd.MarkFlagRequired(fullName)
 
-    configInitCmd.Flags().StringVar(&config.User.EmailID, email, "", "The user email id (Must be a gmail account)")
-    _ = configInitCmd.MarkFlagRequired(email)
+    configInitCmd.Flags().StringVar(&config.User.EmailID, emailID, "", "The user email id (Must be a gmail account)")
+    _ = configInitCmd.MarkFlagRequired(emailID)
 
     configInitCmd.Flags().StringVar(&config.User.Resume, resume, "", "The user resume file location along with file name")
     _ = configInitCmd.MarkFlagRequired(resume)

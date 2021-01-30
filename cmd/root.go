@@ -48,7 +48,7 @@ func init() {
 
     // Add sub commands
     rootCmd.AddCommand(configCmd)
-    rootCmd.AddCommand(emailCmd)
+    rootCmd.AddCommand(reachOutCmd)
 
     // Define your flags
     rootCmd.PersistentFlags().BoolVarP(&debugMode, "debug", "X", false, "Enable debug mode (default false)")

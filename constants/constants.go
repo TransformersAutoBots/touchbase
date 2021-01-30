@@ -4,15 +4,24 @@ const (
     AppName = "touchbase"
 
     GoogleApplicationCredentials = "GOOGLE_APPLICATION_CREDENTIALS"
+    TouchBaseConfigDir           = "TOUCHBASE_CONFIG_DIR"
+)
 
-    TouchBaseToken     = "TOUCHBASE_TOKEN"
-    TouchBaseConfigDir = "TOUCHBASE_CONFIG_DIR"
+const (
+    AlphaNumericType = "alphanum"
+    NumericType      = "number"
+    AlphaType        = "alpha"
+
+    IntroduceTemplateName = "introduce"
+    DotHtml               = ".html"
+    FuncMapKey            = "dict"
 )
 
 // Separators.
 const (
-    CommaSeparator = ","
-    DotSeparator   = "."
+    CommaSeparator        = ","
+    DotSeparator          = "."
+    ForwardSlashSeparator = "/"
 
     JsonPrefix = ""
     JsonIntend = "  "

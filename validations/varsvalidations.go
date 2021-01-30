@@ -46,7 +46,7 @@ func validateDirPath(path string) bool {
 
 func ValidateConfigDir(configDirPath string) error {
     if utils.IsEmptyString(configDirPath) {
-        return errors.Errorf("Env var \"%s\" is empty or missing", constants.TouchBaseConfigDir)
+        return errors.Errorf(`Env var %s is empty or missing`, constants.TouchBaseConfigDir)
     }
 
     absPath, err := utils.GetAbsPath(configDirPath)
@@ -56,6 +56,18 @@ func ValidateConfigDir(configDirPath string) error {
 
     if !validateDirPath(absPath) {
         return errors.Errorf("%s is not a valid config dir path", absPath)
+    }
+    return nil
+}
+
+func ValidateIntroduceHtmlFileExists(introduceHtmlFilePath string) error {
+    absPath, err := utils.GetAbsPath(introduceHtmlFilePath)
+    if err != nil {
+        return err
+    }
+
+    if !validateFileExists(absPath) {
+        return errors.Errorf(`introduce.html file not found at location %s`, absPath)
     }
     return nil
 }

@@ -138,7 +138,7 @@ func Sheets() *sheets.Service {
         }))
     }
 
-    //goland:noinspection GoDeprecation
+    //nolint:staticcheck
     sheetsService, err := sheets.New(client)
     if err != nil {
         getLogger().Fatal("Error in retrieving Google Sheets service object", log.TouchBaseError(&types.Log{
@@ -172,7 +172,7 @@ func Gmail() *gmail.Service {
         }))
     }
 
-    //goland:noinspection GoDeprecation
+    //nolint:staticcheck
     gmailService, err := gmail.New(client)
     if err != nil {
         getLogger().Fatal("Error in retrieving Google Gmail service object", log.TouchBaseError(&types.Log{

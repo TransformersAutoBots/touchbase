@@ -14,6 +14,8 @@ import (
 type LogInstance struct {
     logInitialized sync.Once
     log            *zap.Logger
+
+    companyNameInitialized sync.Once
 }
 
 // logConfig holds information necessary for customizing the logger.
@@ -21,6 +23,21 @@ type logConfig struct {
     level      string
     format     string
     enableTime bool
+}
+
+// AddCompanyName adds the company name to root logging.
+//
+// Args:
+//   v: the company name
+//   logInstance: the log instance for the current event
+// Return:
+//   the log instance with the company name for the current event
+func AddCompanyName(v interface{}, logInstance *LogInstance) {
+    logInstance.companyNameInitialized.Do(func() {
+        logInstance.log = logInstance.log.With(
+            convertToField("company", v),
+        )
+    })
 }
 
 // getLogLevel gets the log level.

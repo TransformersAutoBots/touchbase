@@ -46,14 +46,6 @@ func registrationFunc(tag string, translation string) validator.RegisterTranslat
     }
 }
 
-func translationFunc(ut ut.Translator, fe validator.FieldError) string {
-    t, err := ut.T(fe.Tag(), reflect.ValueOf(fe.Value()).String())
-    if err != nil {
-        return err.Error()
-    }
-    return t
-}
-
 // customValidationError returns the custom validation error message.
 func customValidationError(tag, errorMessage string) error {
     return errors.Errorf("failed to register %s custom validation. Reason: %s", tag, errorMessage)
