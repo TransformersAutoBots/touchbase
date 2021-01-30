@@ -15,6 +15,14 @@ import (
 // subject from user input
 // Add test email capability using a flag
 
+const (
+    emailSubject = "subject"
+)
+
+var (
+    subject string
+)
+
 var reachOutCmd = &cobra.Command{
     Use:   "reach-out",
     Short: "Reach out to the company recruiters/managers",
@@ -33,12 +41,16 @@ in the data sheet.`, generateBanner(constants.AppName)),
     },
 
     RunE: func(cmd *cobra.Command, args []string) error {
-        err := touchbasemanager.ReachOutRecruiters()
+        err := touchbasemanager.ReachOutRecruiters(&subject)
         if err != nil {
             return err
         }
         return nil
     },
+}
+
+func init() {
+    reachOutCmd.Flags().StringVarP(&subject, emailSubject, "", "Application for Software Engineer/Software Developer", "The subject of the email to be sent")
 }
 
 func validateIntroduceHtmlFileExists() error {

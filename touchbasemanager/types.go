@@ -15,7 +15,9 @@ type company struct {
 }
 
 type application struct {
-    Company  company `json:"company"`
-    StartRow int64   `json:"start_row"`
-    EndRow   int64   `json:"end_row"`
+    Company company `json:"company"`
+
+    StartRow int64  `json:"start_row"`
+    EndRow   int64  `json:"end_row"`
+    Subject  string `json:"subject"`
 }

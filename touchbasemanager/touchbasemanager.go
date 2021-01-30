@@ -33,7 +33,7 @@ func retrieveCompanyDetails(companyName string) (*sheets.ValueRange, error) {
     return companyDetails, nil
 }
 
-func ReachOutRecruiters() error {
+func ReachOutRecruiters(subject *string) error {
     getLogger().Debug("Initializing config... ")
     initConfig()
 
@@ -70,6 +70,7 @@ func ReachOutRecruiters() error {
         },
         StartRow: start,
         EndRow:   end,
+        Subject:  *subject,
     }
 
     application.send()

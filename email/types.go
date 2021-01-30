@@ -5,9 +5,9 @@ import (
 )
 
 type recruiter struct {
-    FullName    string `json:"full_name"`
-    EmailID     string `json:"email_id"`
-    CompanyName string `json:"company_name"`
+    FullName string `json:"full_name"`
+    EmailID  string `json:"email_id"`
+    Company  string `json:"company"`
 }
 
 type user struct {
@@ -20,13 +20,15 @@ type user struct {
 type email struct {
     Recruiter recruiter `json:"recruiter"`
     User      user      `json:"user"`
-    Boundary  string    `json:"boundary"`
+
+    Subject  string `json:"subject"`
+    Boundary string `json:"boundary"`
 }
 
 type Email interface {
     To() string
     From() string
-    Subject() string
+    EmailSubject() string
     MIMEBoundary() string
 
     EmailBody() string

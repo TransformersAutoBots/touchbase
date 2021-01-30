@@ -39,7 +39,7 @@ Content-Disposition: attachment; filename="%s"
 
 %s
 
---%s--`, e.MIMEBoundary(), e.To(), e.From(), e.Subject(), e.MIMEBoundary(), emailBody, e.MIMEBoundary(), e.MIMEType(fileBytes), e.ResumeFileName(), e.ResumeFileName(), chunkSplit(e.Attachment(fileBytes), 76, "\n"), e.MIMEBoundary()), nil
+--%s--`, e.MIMEBoundary(), e.To(), e.From(), e.EmailSubject(), e.MIMEBoundary(), emailBody, e.MIMEBoundary(), e.MIMEType(fileBytes), e.ResumeFileName(), e.ResumeFileName(), chunkSplit(e.Attachment(fileBytes), 76, "\n"), e.MIMEBoundary()), nil
 }
 
 func (e *email) SendWithAttachments() error {

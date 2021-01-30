@@ -13,19 +13,12 @@ import (
     "github.com/autobots/touchbase/utils"
 )
 
-func getRecruiterFullName(recruiterFirstName, recruiterLastName string) string {
-    if utils.IsEmptyString(recruiterFirstName) || utils.IsEmptyString(recruiterLastName) {
-        return fmt.Sprintf("%s%s", recruiterFirstName, recruiterLastName)
-    }
-    return fmt.Sprintf("%s %s", recruiterFirstName, recruiterLastName)
-}
-
-func New(recruiterFirstName, recruiterLastName, recruiterEmailID, recruiterCompanyName, templateDirPath string) *email {
+func New(recruiterName, recruiterEmailID, recruiterCompany, subject, templateDirPath string) *email {
     return &email{
         Recruiter: recruiter{
-            FullName:    getRecruiterFullName(recruiterFirstName, recruiterLastName),
-            EmailID:     recruiterEmailID,
-            CompanyName: recruiterCompanyName,
+            FullName: recruiterName,
+            EmailID:  recruiterEmailID,
+            Company:  recruiterCompany,
         },
         User: user{
             FullName:      configs.Config.User.FullName,
@@ -33,6 +26,7 @@ func New(recruiterFirstName, recruiterLastName, recruiterEmailID, recruiterCompa
             Resume:        configs.Config.User.Resume,
             IntroTemplate: templateDirPath,
         },
+        Subject: subject,
     }
 }
 
@@ -44,8 +38,8 @@ func (e *email) From() string {
     return fmt.Sprintf("%s<%s>", e.User.FullName, e.User.EmailID)
 }
 
-func (e *email) Subject() string {
-    return "Application for Software Engineer/Software Developer"
+func (e *email) EmailSubject() string {
+    return e.Subject
 }
 
 func (e *email) MIMEBoundary() string {

@@ -20,4 +20,5 @@
 
 # App files
 .touchbase/
+templates/
 credentials.json
