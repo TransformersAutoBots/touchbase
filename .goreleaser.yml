@@ -1,0 +1,49 @@
+# .goreleaser.yml to build go binary
+project_name: touchbase
+
+before:
+  hooks:
+    - go mod download
+    - go generate ./...
+
+builds:
+  - env:
+      - CGO_ENABLED=0
+    binary: touchbase
+    goos:
+      - linux
+      - darwin
+      - windows
+    goarch:
+      - amd64
+      - 386
+    ignore:
+      - goos: darwin
+        goarch: 386
+
+archives:
+  - replacements:
+      darwin: macOS
+      linux: Linux
+      windows: Windows
+      386: i386
+      amd64: x86_64
+    format_overrides:
+      - goos: windows
+        format: zip
+    name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+
+checksum:
+  name_template: "{{ .ProjectName }}_{{ .Version }}_checksums.txt"
+
+nfpms:
+  -
+    formats:
+      - deb
+      - rpm
+    vendor: enamshah09@gmail.com
+    bindir: /usr/bin
+    file_name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+    homepage: https://github.com/TransformersAutoBots/touchbase.git
+    maintainer: Enam Shah <enamshah09@gmail.com>
+    description: "Touchbase helps to connect with people, share your profile with short description about yourself and your resume/portfolio!"

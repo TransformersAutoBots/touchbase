@@ -47,8 +47,8 @@ CURRENT_TAG_VERSION := $(shell git describe --abbrev=0 --tags 2>/dev/null)
 LATEST_GIT_COMMIT := $(shell git rev-parse HEAD)
 
 # Initialize location to install binaries
-# Binaries will be installed at location "./autobots/bin/"
-INSTALL_BASE_DIR := ./autobots
+# Binaries will be installed at location "./autobotsrelease/bin/"
+INSTALL_BASE_DIR := ./autobotsrelease
 BINARIES_BASE_PATH := $(INSTALL_BASE_DIR)/bin
 GORELEASER_BINARY := $(BINARIES_BASE_PATH)/goreleaser
 
@@ -63,7 +63,7 @@ local: install-go-releaser
 	$(call colored,"${GREEN}","Successfully build pkg locally")
 
 
-all: tag github-release artifactory-release cleanup success
+all: tag github-release cleanup success
 
 
 tag:

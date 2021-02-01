@@ -14,11 +14,16 @@
 # Dependency directories (remove the comment below to include it)
 # vendor/
 
+# Required by Makefile to download required packages
+autobotsrelease/
+
+# Ignore dist dir created by goreleaser
+dist/
+
 # IDE files
 .idea/
 .vscode/
 
 # App files
 .touchbase/
-templates/
 credentials.json
