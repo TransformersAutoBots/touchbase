@@ -106,6 +106,11 @@ func getLimits(companyDetails *sheets.ValueRange) (int64, int64, error) {
         return 0, 0, err
     }
 
+    start, err := strconv.ParseInt(min, 10, 64)
+    if err != nil {
+        return 0, 0, err
+    }
+
     getLogger().Debug("Retrieving the end row to send emails from the company sheet")
     prompt = promptui.Prompt{
         Label: fmt.Sprintf("End Row (Max allowed: %d)", len(companyDetails.Values)),
@@ -116,17 +121,14 @@ func getLimits(companyDetails *sheets.ValueRange) (int64, int64, error) {
             }
             if endNum > int64(len(companyDetails.Values)) {
                 return errors.Errorf("End row cannot be greater than %d", len(companyDetails.Values))
+            } else if endNum < start {
+                return errors.New("End row cannot be smaller than start row")
             }
             return nil
         },
     }
 
     max, err := prompt.Run()
-    if err != nil {
-        return 0, 0, err
-    }
-
-    start, err := strconv.ParseInt(min, 10, 64)
     if err != nil {
         return 0, 0, err
     }

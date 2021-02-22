@@ -9,7 +9,6 @@ import (
     "github.com/autobots/touchbase/touchbasemanager"
     "github.com/autobots/touchbase/types"
     "github.com/autobots/touchbase/utils"
-    "github.com/autobots/touchbase/validations"
 )
 
 const (
@@ -41,10 +40,6 @@ the necessary config files required for the application to run.`, generateBanner
         }
         config.User.Resume = resumeAbsPath
 
-        // Validate the email address and data file path
-        if err := validations.ValidateConfig(config); err != nil {
-            return err
-        }
         return nil
     },
 

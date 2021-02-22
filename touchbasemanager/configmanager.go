@@ -57,6 +57,11 @@ func CreateConfig(c *types.Config) error {
         return err
     }
 
+    // Validate the email address and data file path
+    if err := validations.ValidateConfig(c); err != nil {
+        return err
+    }
+
     if err := generateConfigFile(); err != nil {
         getLogger().With(
             log.Attribute("configDirPath", getConfigDirPath()),

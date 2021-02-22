@@ -47,7 +47,7 @@ description about yourself and your resume/portfolio!
    ![Create App Credentials](https://media.giphy.com/media/jBWtwSYFtoJ00Twxyb/giphy.gif)
 
 ### Retrieve spreadsheet ID
-1. In your Google Drive create a Google Sheets and its spreadsheet id.
+1. In your Google Drive create a Google Sheets and retrieve its spreadsheet id.
    For Reference on how to retrieve spreadsheet id [Click here](https://developers.google.com/sheets/api/guides/concepts#spreadsheet_id)
 
 ### Spreadsheet Format
@@ -116,6 +116,7 @@ touchbase config init --email=<gmail_id@gmail.com> --full-name=<your_full_name> 
   4. After config init successful run, add a file named `introduce.html` in your
      TOUCHBASE_CONFIG_DIR. This file will contain the body of the email that 
      you want to send to Recruiter/manager. [Click here for Sample](./templates/introduce.html)
+
 E.g:
 ```
 touchbase config init --email="test@gmail.com" --full-name="FirstName LastName" --spreadsheet-id="1234567890abcdefgh" --resume=/Users/testuser/Desktop/resume.pdf
@@ -143,7 +144,7 @@ touchbase config update --key=user.resume --value=/Users/testuser/Desktop/new_re
 touchbase reach-out
 ```
 
-Select the Company from the list
+Select the Company from the list and enter the start and end row
 #### Enable debug mode
 Add -X at the end of any command to enable debug mode 
 ```
