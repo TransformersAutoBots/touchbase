@@ -3,7 +3,7 @@
 [![Releases](https://img.shields.io/github/v/tag/TransformersAutoBots/touchbase.svg?label=latest)](https://github.com/TransformersAutoBots/touchbase/releases/latest)
 [![GitHub issues](https://img.shields.io/github/issues/TransformersAutoBots/touchbase?color=red)](https://github.com/TransformersAutoBots/touchbase/issues)
 [![GitHub forks](https://img.shields.io/github/forks/TransformersAutoBots/touchbase?color=violet)](https://github.com/TransformersAutoBots/touchbase/network)
-[![License](https://img.shields.io/github/license/TransformersAutoBots/touchbase)](./LICENSE)
+[![License](https://img.shields.io/github/license/TransformersAutoBots/touchbase)](LICENSE)
 
 ## Table of Contents
 * [Introduction](#introduction)
@@ -115,7 +115,7 @@ touchbase config init --email=<gmail_id@gmail.com> --full-name=<your_full_name> 
   3. Resume file path must be a valid file path. (Only pdf format allowed for now)
   4. After config init successful run, add a file named `introduce.html` in your
      TOUCHBASE_CONFIG_DIR. This file will contain the body of the email that 
-     you want to send to Recruiter/manager. [Click here for Sample](./templates/introduce.html)
+     you want to send to Recruiter/manager. [Click here for Sample](docs/templates/introduce.html)
 
 E.g:
 ```
