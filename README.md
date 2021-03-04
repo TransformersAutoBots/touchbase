@@ -51,7 +51,7 @@ description about yourself and your resume/portfolio!
    For Reference on how to retrieve spreadsheet id [Click here](https://developers.google.com/sheets/api/guides/concepts#spreadsheet_id)
 
 ### Spreadsheet Format
-1. The sheets same should be the companies name
+1. The sheets name should be the companies name
 2. The first row of each sheet should have 3 columns
    
    |First Name | Last Name | Email|
@@ -66,6 +66,7 @@ You can download the latest [Release](https://github.com/TransformersAutoBots/to
 
 ### Build from source code
 ```
+git clone https://github.com/TransformersAutoBots/touchbase.git
 go build
 go install
 ```
